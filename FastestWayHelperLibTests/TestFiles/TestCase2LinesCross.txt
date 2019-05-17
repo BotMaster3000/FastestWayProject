@@ -1,0 +1,13 @@
+[Stationen]
+[S1]
+Wollankstraße
+-00:05
+Bornholmer Straße
+-00:06
+Gesundbrunnen
+[S8]
+Pankow
+-00:03
+Bornholmer Straße
+-00:09
+Schönhauser Allee
