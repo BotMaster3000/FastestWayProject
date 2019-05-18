@@ -9,6 +9,6 @@ namespace FastestWayProject.Interfaces
     public interface ILineInterface
     {
         string Name { get; }
-        IStationInterface[] Stations { get; }
+        IStationInterface[] Stations { get; set; }
     }
 }

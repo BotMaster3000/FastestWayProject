@@ -10,7 +10,7 @@ namespace FastestWayProject.Models
     public class LineModel : ILineInterface
     {
         public string Name { get; }
-        public IStationInterface[] Stations { get; }
+        public IStationInterface[] Stations { get; set; }
 
         public LineModel(string name)
         {

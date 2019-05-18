@@ -1,4 +1,3 @@
-[Stationen]
 [S1]
 Wollankstraße
 -00:05

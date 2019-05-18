@@ -134,6 +134,7 @@ namespace FastestWayProject.Parsers.Tests
                         stationFound = true;
                         break;
                     }
+                    if (stationFound) break;
                 }
                 if (stationFound) break;
             }
