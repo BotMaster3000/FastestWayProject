@@ -9,6 +9,6 @@ namespace FastestWayDatabaseLib.Tables
 {
     internal class StationToStationTable : ITable
     {
-        public string TableName { get; }
+        public string TableName { get; } = "StationToStation";
     }
 }

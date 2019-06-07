@@ -48,9 +48,9 @@
   <ItemGroup>
     <Compile Include="Interfaces\ITable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tables\LineStationTable.cs" />
-    <Compile Include="Tables\LineTable.cs" />
-    <Compile Include="Tables\StationTable.cs" />
+    <Compile Include="Tables\LinesStationsTable.cs" />
+    <Compile Include="Tables\LinesTable.cs" />
+    <Compile Include="Tables\StationsTable.cs" />
     <Compile Include="Tables\StationToStationTable.cs" />
     <Compile Include="Tables\TrainNetworkTable.cs" />
   </ItemGroup>

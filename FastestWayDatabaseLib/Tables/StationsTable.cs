@@ -7,8 +7,8 @@ using FastestWayDatabaseLib.Interfaces;
 
 namespace FastestWayDatabaseLib.Tables
 {
-    internal class StationTable : ITable
+    internal class StationsTable : ITable
     {
-        public string TableName { get; }
+        public string TableName { get; } = "Stations"
     }
 }
