@@ -19,7 +19,7 @@ CREATE TABLE {TableName}(
     Name varchar(255) NOT NULL,
     TN_ID int,
     PRIMARY KEY (TN_ID),
-    FOREIGN KEY (TN_ID) REFERENCES TrainNetwork(TN_ID)
+    FOREIGN KEY (TN_ID) REFERENCES TrainNetworks(TN_ID)
 )
 ";
         }

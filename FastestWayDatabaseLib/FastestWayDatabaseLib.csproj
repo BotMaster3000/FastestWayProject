@@ -52,7 +52,7 @@
     <Compile Include="Tables\LinesTable.cs" />
     <Compile Include="Tables\StationsTable.cs" />
     <Compile Include="Tables\StationToStationTable.cs" />
-    <Compile Include="Tables\TrainNetworkTable.cs" />
+    <Compile Include="Tables\TrainNetworksTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
