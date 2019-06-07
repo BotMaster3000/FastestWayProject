@@ -27,8 +27,6 @@ namespace FastestWayProject.Parsers
 
         private ITrainNetwork Parse(string[] content)
         {
-            // Wenn Line gefunden wurde, solange die Tags sammeln bis wieder eine Line kommt, 
-            // dann die bisherigen Tags verarbeiten und zuweisen, danach näcshte Line verarbeiten
             List<ILineInterface> lines = new List<ILineInterface>();
             ILineInterface currentLine = null;
             List<ITag> currentLineTags = new List<ITag>();
