@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums\DataEnums.cs" />
+    <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITrainNetwork.cs" />
     <Compile Include="Interfaces\ITrainNetworkParser.cs" />
     <Compile Include="Interfaces\ILineInterface.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="Models\LineModel.cs" />
     <Compile Include="Models\StationConnectionModel.cs" />
     <Compile Include="Models\StationModel.cs" />
+    <Compile Include="Models\TagModel.cs" />
     <Compile Include="Models\TrainNetworkModel.cs" />
     <Compile Include="Parsers\TrainNetworkParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

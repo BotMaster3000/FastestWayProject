@@ -12,6 +12,8 @@ namespace FastestWayProject.Parsers
 {
     public class TrainNetworkParser : ITrainNetworkParser
     {
+        private List<IStationInterface> stationList = new List<IStationInterface>();
+
         public ITrainNetwork ParseTrainNetwork(string fileName)
         {
             string[] fileContent = ReadFileContent(fileName);
@@ -25,54 +27,38 @@ namespace FastestWayProject.Parsers
 
         private ITrainNetwork Parse(string[] content)
         {
+            // Wenn Line gefunden wurde, solange die Tags sammeln bis wieder eine Line kommt, 
+            // dann die bisherigen Tags verarbeiten und zuweisen, danach näcshte Line verarbeiten
             List<ILineInterface> lines = new List<ILineInterface>();
-            List<IStationInterface> stations = new List<IStationInterface>();
-            List<IStationInterface> currentLineStations = new List<IStationInterface>();
             ILineInterface currentLine = null;
-            IStationInterface previousStation = null;
-            IStationInterface currentStation = null;
-            IStationConnectionInterface currentTimeConnection = null;
+            List<ITag> currentLineTags = new List<ITag>();
             foreach (string dataLine in content)
             {
                 switch (DetermineContentType(dataLine))
                 {
                     case DataEnums.LINE:
-                        if (currentLineStations?.Count > 0)
+                        if (currentLine != null)
                         {
-                            currentLine.Stations = currentLineStations.ToArray();
-                            currentLineStations.Clear();
+                            AddTagsToCurrentLine(currentLine, currentLineTags);
+                            stationList.AddRange(currentLine.Stations);
+                            currentLineTags.Clear();
                         }
                         currentLine = ParseLine(dataLine);
                         lines.Add(currentLine);
                         break;
                     case DataEnums.STATION:
-                        previousStation = currentStation;
-                        IStationInterface tempStation = ParseStation(dataLine);
-                        if (StationAlreadyInList(tempStation, stations))
-                        {
-                            currentStation = GetStation(tempStation.Name, stations);
-                        }
-                        else
-                        {
-                            currentStation = ParseStation(dataLine);
-                            stations.Add(currentStation);
-                        }
-                        currentLineStations.Add(currentStation);
-                        if (previousStation != null && currentTimeConnection != null)
-                        {
-                            ConnectStations(previousStation, currentStation, currentTimeConnection);
-                            currentTimeConnection = null;
-                        }
+                        currentLineTags.Add(GetStationTag(dataLine));
                         break;
                     case DataEnums.TIME:
-                        currentTimeConnection = ParseStationConnection(dataLine);
+                        currentLineTags.Add(GetTimeTag(dataLine));
                         break;
                 }
             }
-            if (currentLineStations?.Count > 0)
+            if (currentLineTags.Count > 0 && currentLine != null)
             {
-                currentLine.Stations = currentLineStations.ToArray();
+                AddTagsToCurrentLine(currentLine, currentLineTags);
             }
+
             return new TrainNetworkModel(lines.ToArray());
         }
 
@@ -94,6 +80,47 @@ namespace FastestWayProject.Parsers
             return DataEnums.UNDEFINED;
         }
 
+        private ITag GetStationTag(string dataLine)
+        {
+            return new TagModel(DataEnums.STATION, dataLine.Trim());
+        }
+
+        private ITag GetTimeTag(string dataLine)
+        {
+            string value = dataLine.Trim('-').Trim();
+            return new TagModel(DataEnums.TIME, value);
+        }
+
+        private void AddTagsToCurrentLine(ILineInterface currentLine, List<ITag> tags)
+        {
+            IStationInterface previousStation;
+            IStationInterface currentStation = null;
+            IStationConnectionInterface currentStationConnection = null;
+            List<IStationInterface> stations = new List<IStationInterface>();
+            foreach (ITag tag in tags)
+            {
+                switch (tag.TagType)
+                {
+                    case DataEnums.STATION:
+                        previousStation = currentStation;
+                        IStationInterface tempStation = ParseStation(tag.Value);
+                        currentStation = StationAlreadyInList(tempStation)
+                            ? GetStation(tempStation.Name)
+                            : tempStation;
+
+                        stations.Add(currentStation);
+
+                        ConnectStations(currentStation, previousStation, currentStationConnection);
+                        currentStationConnection = null;
+                        break;
+                    case DataEnums.TIME:
+                        currentStationConnection = ParseStationConnection(tag.Value);
+                        break;
+                }
+            }
+            currentLine.Stations = stations.ToArray();
+        }
+
         private ILineInterface ParseLine(string dataLine)
         {
             string lineName = dataLine.Trim(new char[] { '[', ']' });
@@ -106,9 +133,9 @@ namespace FastestWayProject.Parsers
             return new StationModel(stationName);
         }
 
-        private bool StationAlreadyInList(IStationInterface station, List<IStationInterface> stationList)
+        private bool StationAlreadyInList(IStationInterface station)
         {
-            foreach(IStationInterface stationListItem in stationList)
+            foreach (IStationInterface stationListItem in stationList)
             {
                 if (stationListItem.Name == station.Name)
                 {
@@ -118,11 +145,11 @@ namespace FastestWayProject.Parsers
             return false;
         }
 
-        private IStationInterface GetStation(string name, List<IStationInterface> stationList)
+        private IStationInterface GetStation(string name)
         {
-            foreach(IStationInterface stationListItem in stationList)
+            foreach (IStationInterface stationListItem in stationList)
             {
-                if(stationListItem.Name == name)
+                if (stationListItem.Name == name)
                 {
                     return stationListItem;
                 }
@@ -132,15 +159,24 @@ namespace FastestWayProject.Parsers
 
         private void ConnectStations(IStationInterface firstStation, IStationInterface secondStation, IStationConnectionInterface connection)
         {
-            IStationConnectionInterface[] stationConnections = GetStationArray(firstStation);
-            stationConnections[stationConnections.Length - 1] =
-                new StationConnectionModel(hours: connection.Hours, minutes: connection.Minutes, station: secondStation);
-            firstStation.StationConnections = stationConnections;
+            if (firstStation != null && secondStation != null && connection != null)
+            {
+                IStationConnectionInterface[] stationConnections = GetStationArray(firstStation);
+                stationConnections[stationConnections.Length - 1] =
+                    new StationConnectionModel(
+                        hours: connection.Hours,
+                        minutes: connection.Minutes,
+                        station: secondStation);
+                firstStation.StationConnections = stationConnections;
 
-            stationConnections = GetStationArray(secondStation);
-            stationConnections[stationConnections.Length - 1] =
-                new StationConnectionModel(hours: connection.Hours, minutes: connection.Minutes, station: firstStation);
-            secondStation.StationConnections = stationConnections;
+                stationConnections = GetStationArray(secondStation);
+                stationConnections[stationConnections.Length - 1] =
+                    new StationConnectionModel(
+                        hours: connection.Hours,
+                        minutes: connection.Minutes,
+                        station: firstStation);
+                secondStation.StationConnections = stationConnections;
+            }
         }
 
         private IStationConnectionInterface[] GetStationArray(IStationInterface station)
