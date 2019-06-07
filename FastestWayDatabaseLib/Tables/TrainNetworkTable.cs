@@ -9,6 +9,17 @@ namespace FastestWayDatabaseLib.Tables
 {
     internal class TrainNetworkTable : ITable
     {
-        public string TableName { get; }
+        public string TableName { get; } = "TrainNetwork";
+
+        public string GetTableDefinition()
+        {
+            return $@"
+CREATE TABLE {TableName}(
+    TN_ID int NOT NULL,
+    Name varchar(255) NOT NULL,
+    PRIMARY KEY (TN_ID)
+)
+";
+        }
     }
 }

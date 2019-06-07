@@ -10,5 +10,18 @@ namespace FastestWayDatabaseLib.Tables
     internal class LinesTable : ITable
     {
         public string TableName { get; } = "Lines";
+
+        public string GetTableDefinition()
+        {
+            return $@"
+CREATE TABLE {TableName}(
+    L_ID int NOT NULL PRIMARY KEY,
+    Name varchar(255) NOT NULL,
+    TN_ID int,
+    PRIMARY KEY (TN_ID),
+    FOREIGN KEY (TN_ID) REFERENCES TrainNetwork(TN_ID)
+)
+";
+        }
     }
 }

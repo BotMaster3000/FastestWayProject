@@ -9,5 +9,7 @@ namespace FastestWayDatabaseLib.Interfaces
     public interface ITable
     {
         string TableName { get; }
+
+        string GetTableDefinition();
     }
 }
